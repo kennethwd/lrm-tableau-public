@@ -1,3 +1,15 @@
+import os
+import pandas as pd
+
+if not os.path.exists("profiles.jsonl"):
+    raise FileNotFoundError("profiles.jsonl not found in repo root. Check filename and commit.")
+
+profiles = pd.read_json("profiles.jsonl", lines=True, dtype=str)
+required = {"profile_id","name","source","text","batch_tag"}
+missing = required - set(profiles.columns)
+if missing:
+    raise ValueError(f"profiles.jsonl missing columns: {missing}. Found: {list(profiles.columns)}")
+
 import pandas as pd
 import re
 from datetime import datetime
