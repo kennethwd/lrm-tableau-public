@@ -1,4 +1,4 @@
-- name: Debug files
+name: Debug files
   run: |
     ls -la
     echo "---- profiles.jsonl ----"
