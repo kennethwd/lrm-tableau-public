@@ -31,8 +31,7 @@ def score_text(text):
 
     return {m: means.get(m, 0) for m in METRICS}
 
-
-profiles = pd.read_json("profiles.jsonl", lines=True)
+profiles = pd.read_json("profiles.jsonl", lines=True, dtype=str)
 
 run_id = datetime.utcnow().strftime("%Y%m%d_%H%M")
 
