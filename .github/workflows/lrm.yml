@@ -1,10 +1,3 @@
-name: Debug files
-  run: |
-    ls -la
-    echo "---- profiles.jsonl ----"
-    sed -n '1,5p' profiles.jsonl || true
-
-
 name: LRM scoring
 
 on:
@@ -13,34 +6,57 @@ on:
     - cron: "0 2 * * *"
 
 jobs:
-  run:
+  run-lrm:
     runs-on: ubuntu-latest
 
     steps:
 
-    - uses: actions/checkout@v4
+      # Checkout your repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - uses: actions/checkout@v4
-      with:
-        repository: 888jjm-dotcom/Linguistic-Risk-Measurement
-        path: lrm_repo
+      # Checkout the Linguistic Risk Measurement repo
+      - name: Checkout LRM engine
+        uses: actions/checkout@v4
+        with:
+          repository: 888jjm-dotcom/Linguistic-Risk-Measurement
+          path: lrm_repo
 
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
+      # Setup Python
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - run: |
-        pip install pandas scikit-learn pdfplumber
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          pip install pandas scikit-learn pdfplumber
 
-    - run: |
-        cp lrm_repo/LRM_engine.py .
-        cp lrm_repo/scoring_rules.json .
-        python run_lrm_csv.py
+      # Copy LRM files into working directory
+      - name: Copy LRM engine files
+        run: |
+          cp lrm_repo/LRM_engine.py .
+          cp lrm_repo/scoring_rules.json .
 
-    - name: Commit results
-      run: |
-        git config user.name github-actions
-        git config user.email actions@github.com
-        git add results.csv
-        git commit -m "update LRM results" || echo "no changes"
-        git push
+      # Debug files (helps if things break)
+      - name: Debug repo files
+        run: |
+          echo "Repository files:"
+          ls -la
+          echo "profiles.jsonl preview:"
+          head -n 5 profiles.jsonl
+
+      # Run the scoring script
+      - name: Run LRM scoring
+        run: |
+          python run_lrm_csv.py
+
+      # Commit results.csv back to repo
+      - name: Commit results
+        run: |
+          git config user.name github-actions
+          git config user.email actions@github.com
+          git add results.csv
+          git commit -m "Update LRM results" || echo "No changes to commit"
+          git push
