@@ -1,3 +1,10 @@
+- name: Debug files
+  run: |
+    ls -la
+    echo "---- profiles.jsonl ----"
+    sed -n '1,5p' profiles.jsonl || true
+
+
 name: LRM scoring
 
 on:
