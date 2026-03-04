@@ -1,0 +1,42 @@
+name: LRM → Google Sheets (for Tableau Public)
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    # Daily at 02:15 UTC
+    - cron: "15 2 * * *"
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pipeline repo
+        uses: actions/checkout@v4
+
+      - name: Checkout LRM repo
+        uses: actions/checkout@v4
+        with:
+          repository: 888jjm-dotcom/Linguistic-Risk-Measurement
+          path: lrm_repo
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run LRM scoring
+        env:
+          GSHEET_ID: ${{ secrets.GSHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          PROFILES_TAB: profiles
+          OUTPUT_TAB: lrm_scores_long
+        run: |
+          # LRM engine expects scoring_rules.json alongside it
+          cp lrm_repo/LRM_engine.py .
+          cp lrm_repo/scoring_rules.json .
+          python run_lrm_from_sheet.py
