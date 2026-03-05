@@ -29,6 +29,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+          - name: Install dependencies
+  run: |
+    pip install --upgrade pip
+    pip install pandas scikit-learn pdfplumber gspread google-auth
+
       - name: Run LRM scoring
         env:
           GSHEET_ID: ${{ secrets.GSHEET_ID }}
