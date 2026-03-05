@@ -3,12 +3,12 @@ name: LRM → Google Sheets (for Tableau Public)
 on:
   workflow_dispatch: {}
   schedule:
-    # Daily at 02:15 UTC
     - cron: "15 2 * * *"
 
 jobs:
   score:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout pipeline repo
         uses: actions/checkout@v4
@@ -24,15 +24,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-          - name: Install dependencies
-  run: |
-    pip install --upgrade pip
-    pip install pandas scikit-learn pdfplumber gspread google-auth
+          pip install pandas scikit-learn pdfplumber gspread google-auth
 
       - name: Run LRM scoring
         env:
@@ -41,7 +36,6 @@ jobs:
           PROFILES_TAB: profiles
           OUTPUT_TAB: lrm_scores_long
         run: |
-          # LRM engine expects scoring_rules.json alongside it
           cp lrm_repo/LRM_engine.py .
           cp lrm_repo/scoring_rules.json .
           python run_lrm_from_sheet.py
