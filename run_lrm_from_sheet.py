@@ -7,6 +7,12 @@ import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
 
+
+with open("scoring_rules.json") as f:
+    rules = json.load(f)
+
+print("[DEBUG] number_of_rules =", len(rules))
+
 # We will copy these two files in the workflow step:
 # - LRM_engine.py
 # - scoring_rules.json
